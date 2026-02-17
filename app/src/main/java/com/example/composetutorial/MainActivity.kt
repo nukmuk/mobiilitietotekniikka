@@ -3,12 +3,10 @@ package com.example.composetutorial
 
 import android.content.res.Configuration
 import android.os.Bundle
-import android.provider.ContactsContract
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.animation.EnterTransition
-import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
@@ -56,7 +54,7 @@ class MainActivity : ComponentActivity() {
                 Surface(modifier = Modifier.fillMaxSize()) {
                     MyAppNavHost(
                         modifier = Modifier.statusBarsPadding(),
-                        navController = navController
+                        navController = navController,
                     )
                 }
             }
@@ -76,13 +74,19 @@ fun MyAppNavHost(
     ) {
         composable("conversation") {
             Conversation(SampleData.conversationSample, {
-                if (navController.currentDestination?.route == "conversation") {
-                    navController.navigate("view2")
+                navController.navigate("view2") {
+                    launchSingleTop = true
                 }
             })
         }
         composable("view2") {
-            HW2View { navController.popBackStack() }
+            HW2View {
+                if (!navController.popBackStack()) {
+                    navController.navigate("conversation") {
+                        launchSingleTop = true
+                    }
+                }
+            }
         }
     }
 }
@@ -136,7 +140,7 @@ fun MessageCard(msg: Message) {
 @Composable
 fun Conversation(messages: List<Message>, onNavigateToView2: () -> Unit) {
     Column {
-        Button(onClick = onNavigateToView2, Modifier.padding(16.dp)) {
+        Button(onClick = onNavigateToView2, Modifier.padding(8.dp)) {
             Text("Go to view 2")
         }
         LazyColumn {
