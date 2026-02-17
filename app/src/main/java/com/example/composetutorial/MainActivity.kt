@@ -3,9 +3,12 @@ package com.example.composetutorial
 
 import android.content.res.Configuration
 import android.os.Bundle
+import android.provider.ContactsContract
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
@@ -18,10 +21,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -35,20 +40,49 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.composetutorial.ui.theme.ComposeTutorialTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-//        enableEdgeToEdge()
+        enableEdgeToEdge()
         setContent {
-            ComposeTutorialTheme {
             val navController = rememberNavController()
+            ComposeTutorialTheme {
                 Surface(modifier = Modifier.fillMaxSize()) {
-                    Conversation(SampleData.conversationSample)
+                    MyAppNavHost(
+                        modifier = Modifier.statusBarsPadding(),
+                        navController = navController
+                    )
                 }
             }
+        }
+    }
+}
+
+@Composable
+fun MyAppNavHost(
+    modifier: Modifier = Modifier,
+    navController: NavHostController,
+) {
+    NavHost(
+        modifier = modifier,
+        navController = navController,
+        startDestination = "conversation",
+    ) {
+        composable("conversation") {
+            Conversation(SampleData.conversationSample, {
+                if (navController.currentDestination?.route == "conversation") {
+                    navController.navigate("view2")
+                }
+            })
+        }
+        composable("view2") {
+            HW2View { navController.popBackStack() }
         }
     }
 }
@@ -100,10 +134,15 @@ fun MessageCard(msg: Message) {
 }
 
 @Composable
-fun Conversation(messages: List<Message>) {
-    LazyColumn {
-        items(messages) { message ->
-            MessageCard(message)
+fun Conversation(messages: List<Message>, onNavigateToView2: () -> Unit) {
+    Column {
+        Button(onClick = onNavigateToView2, Modifier.padding(16.dp)) {
+            Text("Go to view 2")
+        }
+        LazyColumn {
+            items(messages) { message ->
+                MessageCard(message)
+            }
         }
     }
 }
@@ -112,7 +151,7 @@ fun Conversation(messages: List<Message>) {
 @Composable
 fun PreviewConversation() {
     ComposeTutorialTheme {
-        Conversation(SampleData.conversationSample)
+        Conversation(SampleData.conversationSample, {})
     }
 }
 
