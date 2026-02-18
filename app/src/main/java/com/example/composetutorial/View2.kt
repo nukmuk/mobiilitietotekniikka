@@ -10,7 +10,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun HW2View(onBackButton: () -> Unit
+fun View2(onBackButton: () -> Unit
 ) {
     Column (Modifier.padding(8.dp)){
         Button(onClick = onBackButton) {
@@ -22,6 +22,6 @@ fun HW2View(onBackButton: () -> Unit
 
 @Preview
 @Composable
-fun HW2ViewPreview() {
-    HW2View {}
+fun View2Preview() {
+    View2 {}
 }
