@@ -1,4 +1,4 @@
-package com.example.composetutorial
+package com.example.composetutorial.ui.theme.screens
 
 import android.content.res.Configuration
 import androidx.compose.animation.animateColorAsState
@@ -30,6 +30,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.composetutorial.R
+import com.example.composetutorial.data.SampleData
 import com.example.composetutorial.ui.theme.ComposeTutorialTheme
 
 data class Message(val author: String, val body: String)

@@ -14,7 +14,10 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.composetutorial.data.SampleData
 import com.example.composetutorial.ui.theme.ComposeTutorialTheme
+import com.example.composetutorial.ui.theme.screens.Conversation
+import com.example.composetutorial.ui.theme.screens.View2
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

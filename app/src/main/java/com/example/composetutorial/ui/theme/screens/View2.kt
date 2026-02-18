@@ -1,4 +1,4 @@
-package com.example.composetutorial
+package com.example.composetutorial.ui.theme.screens
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
