@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
+import androidx.room.Room
 import com.example.composetutorial.ui.theme.ComposeTutorialTheme
 
 class MainActivity : ComponentActivity() {
@@ -18,6 +19,10 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             val navController = rememberNavController()
+            val db = Room.databaseBuilder(
+                applicationContext,
+                AppDatabase::class.java, "my-database"
+            ).build()
             ComposeTutorialTheme {
                 Surface(modifier = Modifier.fillMaxSize()) {
                     MyAppNavHost(

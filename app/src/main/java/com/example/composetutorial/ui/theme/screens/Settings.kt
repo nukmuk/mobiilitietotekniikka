@@ -13,15 +13,13 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableLongStateOf
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import com.example.composetutorial.R
 import java.io.File
 
 const val profile_picture_name = "profile_picture"
@@ -29,6 +27,7 @@ const val profile_picture_name = "profile_picture"
 @Composable
 fun Settings(onNavigateToConversation: () -> Unit) {
     val context = LocalContext.current
+    var imageVersion by remember { mutableIntStateOf(0) }
 
     val pickMedia = rememberLauncherForActivityResult(PickVisualMedia()) { uri ->
         if (uri == null) {
@@ -37,12 +36,13 @@ fun Settings(onNavigateToConversation: () -> Unit) {
         }
         Log.d("PhotoPicker", "Selected URI: $uri")
         saveProfilePicture(uri, context)
+        imageVersion++
     }
 
     Column(Modifier.padding(8.dp)) {
         Button(onClick = onNavigateToConversation) { Text("Conversation") }
         AsyncImage(
-            model = File(context.filesDir, profile_picture_name),
+            model = "${File(context.filesDir, profile_picture_name).absolutePath}?v=$imageVersion",
             contentDescription = "Profile picture",
         )
         TextField("hello", {})

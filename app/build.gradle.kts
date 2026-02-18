@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
     kotlin("plugin.serialization") version "2.0.21"
+    id("com.google.devtools.ksp")
 }
 
 android {
@@ -74,4 +75,15 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
 
     implementation(libs.coil.compose)
+
+    val roomVersion = "2.8.4"
+
+    implementation("androidx.room:room-runtime:$roomVersion")
+
+    // If this project uses any Kotlin source, use Kotlin Symbol Processing (KSP)
+    // See Add the KSP plugin to your project
+    ksp("androidx.room:room-compiler:$roomVersion")
+
+    // optional - Kotlin Extensions and Coroutines support for Room
+    implementation("androidx.room:room-ktx:${roomVersion}")
 }
