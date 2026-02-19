@@ -17,7 +17,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -36,12 +35,8 @@ const val profile_picture_name = "profile_picture"
 @Composable
 fun Settings(onNavigateToConversation: () -> Unit, db: AppDatabase) {
     val context = LocalContext.current
-    val coroutineScope = rememberCoroutineScope()
     var imageVersion by remember { mutableIntStateOf(0) }
     val profilePictureFile = remember { File(context.filesDir, profile_picture_name) }
-    val profilePictureExists by remember(imageVersion) {
-        mutableStateOf(profilePictureFile.exists())
-    }
     val usernameState = rememberTextFieldState()
     val userDao = db.userDao()
     val scope = rememberCoroutineScope()
@@ -57,16 +52,14 @@ fun Settings(onNavigateToConversation: () -> Unit, db: AppDatabase) {
             return@rememberLauncherForActivityResult
         }
         Log.d("PhotoPicker", "Selected URI: $uri")
-        saveProfilePicture(uri, context, profilePictureFile)
-        imageVersion++
+        if (saveProfilePicture(uri, context, profilePictureFile)) {
+            imageVersion++
+        }
     }
 
     Column(Modifier.padding(8.dp)) {
         Button(onClick = onNavigateToConversation) { Text("Conversation") }
-        if (profilePictureExists)
-            ProfilePicture("${profilePictureFile.absolutePath}?v=$imageVersion", 120)
-        else
-            ProfilePicture(R.drawable.profile_picture, 120)
+        ProfilePicture(profilePictureFile, imageVersion, 120, R.drawable.profile_picture)
         TextField(
             state = usernameState,
             label = { Text("Username") }
@@ -81,15 +74,29 @@ fun Settings(onNavigateToConversation: () -> Unit, db: AppDatabase) {
         Button(onClick = { pickMedia.launch(PickVisualMediaRequest(PickVisualMedia.ImageOnly)) }) {
             Text("Pick photo")
         }
+        Button(onClick = {
+            profilePictureFile.delete()
+            imageVersion++
+        }) {
+            Text("Reset profile picture")
+        }
     }
 }
 
-fun saveProfilePicture(uri: Uri, context: Context, profilePictureFile: File) {
-    val resolver = context.contentResolver
-    resolver.openInputStream(uri).use { stream ->
-        profilePictureFile.outputStream().use { outputStream ->
-            stream?.copyTo(outputStream)
-            println("saved profile picture")
+fun saveProfilePicture(uri: Uri, context: Context, profilePictureFile: File): Boolean {
+    return try {
+        val resolver = context.contentResolver
+        resolver.openInputStream(uri)?.use { stream ->
+            if (!profilePictureFile.exists())
+                profilePictureFile.createNewFile()
+            profilePictureFile.outputStream().use { outputStream ->
+                stream.copyTo(outputStream)
+                println("saved profile picture")
+            }
         }
+        true
+    } catch (e: Exception) {
+        Log.e("PhotoPicker", "Error saving profile picture", e)
+        false
     }
 }
