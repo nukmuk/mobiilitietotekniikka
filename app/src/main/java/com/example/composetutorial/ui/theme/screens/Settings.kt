@@ -8,31 +8,47 @@ import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import com.example.composetutorial.AppDatabase
 import com.example.composetutorial.R
+import com.example.composetutorial.User
 import com.example.composetutorial.ui.theme.components.ProfilePicture
+import kotlinx.coroutines.launch
 import java.io.File
 
 const val profile_picture_name = "profile_picture"
 
 @Composable
-fun Settings(onNavigateToConversation: () -> Unit) {
+fun Settings(onNavigateToConversation: () -> Unit, db: AppDatabase) {
     val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
     var imageVersion by remember { mutableIntStateOf(0) }
     val profilePictureFile = remember { File(context.filesDir, profile_picture_name) }
     val profilePictureExists by remember(imageVersion) {
         mutableStateOf(profilePictureFile.exists())
+    }
+    val usernameState = rememberTextFieldState()
+    val userDao = db.userDao()
+    val scope = rememberCoroutineScope()
+
+    LaunchedEffect(Unit) {
+        val existingUser = userDao.get(0)
+        existingUser?.username?.let { usernameState.setTextAndPlaceCursorAtEnd(it) }
     }
 
     val pickMedia = rememberLauncherForActivityResult(PickVisualMedia()) { uri ->
@@ -51,7 +67,17 @@ fun Settings(onNavigateToConversation: () -> Unit) {
             ProfilePicture("${profilePictureFile.absolutePath}?v=$imageVersion", 120)
         else
             ProfilePicture(R.drawable.profile_picture, 120)
-        TextField("hello", {})
+        TextField(
+            state = usernameState,
+            label = { Text("Username") }
+        )
+        Button(onClick = {
+            scope.launch {
+                db.userDao().upsertUser(User(0, usernameState.text.toString()))
+            }
+        }) {
+            Text("Save Username")
+        }
         Button(onClick = { pickMedia.launch(PickVisualMediaRequest(PickVisualMedia.ImageOnly)) }) {
             Text("Pick photo")
         }

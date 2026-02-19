@@ -14,6 +14,7 @@ import com.example.composetutorial.ui.theme.screens.View2
 fun MyAppNavHost(
     modifier: Modifier = Modifier,
     navController: NavHostController,
+    db: AppDatabase,
 ) {
     NavHost(
         modifier = modifier,
@@ -37,7 +38,12 @@ fun MyAppNavHost(
             }
         }
         composable(NavigationNames.SETTINGS) {
-            Settings() {}
+            Settings(
+                {
+                    navController.navigate(NavigationNames.CONVERSATION)
+                },
+                db
+            )
         }
     }
 }

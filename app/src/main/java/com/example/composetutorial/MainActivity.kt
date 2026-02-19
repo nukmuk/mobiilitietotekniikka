@@ -28,6 +28,7 @@ class MainActivity : ComponentActivity() {
                     MyAppNavHost(
                         modifier = Modifier.statusBarsPadding(),
                         navController = navController,
+                        db = db,
                     )
                 }
             }
