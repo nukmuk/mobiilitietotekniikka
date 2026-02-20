@@ -17,6 +17,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -25,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.composetutorial.R
+import com.example.composetutorial.UserDao
 import com.example.composetutorial.data.SampleData
 import com.example.composetutorial.ui.theme.ComposeTutorialTheme
 import com.example.composetutorial.ui.theme.components.ProfilePicture
@@ -32,7 +34,7 @@ import com.example.composetutorial.ui.theme.components.ProfilePicture
 data class Message(val author: String, val body: String)
 
 @Composable
-fun MessageCard(msg: Message) {
+fun MessageCard(msg: Message, customName: String) {
     Row(modifier = Modifier.padding(all = 8.dp)) {
         ProfilePicture(fallback = R.drawable.profile_picture)
 
@@ -43,9 +45,11 @@ fun MessageCard(msg: Message) {
             if (isExpanded) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface
         )
 
+        val author = customName
+
         Column(modifier = Modifier.clickable { isExpanded = !isExpanded }) {
             Text(
-                text = msg.author,
+                text = author,
                 color = MaterialTheme.colorScheme.secondary
             )
             Spacer(modifier = Modifier.height(4.dp))
@@ -69,14 +73,23 @@ fun MessageCard(msg: Message) {
 }
 
 @Composable
-fun Conversation(messages: List<Message>, onNavigateToView2: () -> Unit) {
+fun Conversation(messages: List<Message>, onNavigateToView2: () -> Unit, userDao: UserDao? = null) {
+    var customName by remember { mutableStateOf<String>("default")}
+    LaunchedEffect(Unit) {
+        println("userdao: $userDao")
+        val existingUser = userDao?.get(0)
+        existingUser?.username?.let { customName = it }
+//        customName = userDao?.get(0)?.username.toString()
+        println("got name and set to $customName")
+    }
+
     Column {
         Button(onClick = onNavigateToView2, Modifier.padding(8.dp)) {
             Text("Go to view 2")
         }
         LazyColumn {
             items(messages) { message ->
-                MessageCard(message)
+                MessageCard(message, customName)
             }
         }
     }
@@ -101,7 +114,8 @@ fun PreviewMessageCard() {
     ComposeTutorialTheme {
         Surface {
             MessageCard(
-                msg = Message("Lexi", "Hey, take a look at Jetpack Compose, it's great!")
+                msg = Message("Lexi", "Hey, take a look at Jetpack Compose, it's great!",),
+                "test"
             )
         }
     }

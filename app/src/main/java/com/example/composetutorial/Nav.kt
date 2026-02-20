@@ -22,11 +22,14 @@ fun MyAppNavHost(
         startDestination = NavigationNames.SETTINGS,
     ) {
         composable(NavigationNames.CONVERSATION) {
-            Conversation(SampleData.conversationSample, {
-                navController.navigate(NavigationNames.VIEW2) {
-                    launchSingleTop = true
-                }
-            })
+            Conversation(
+                SampleData.conversationSample, {
+                    navController.navigate(NavigationNames.VIEW2) {
+                        launchSingleTop = true
+                    }
+                },
+                userDao = db.userDao()
+            )
         }
         composable(NavigationNames.VIEW2) {
             View2 {
