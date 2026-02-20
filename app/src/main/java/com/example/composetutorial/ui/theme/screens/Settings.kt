@@ -33,7 +33,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun Settings(onNavigateToConversation: () -> Unit, db: AppDatabase) {
     val context = LocalContext.current
-    val usernameState = rememberTextFieldState()
+    val usernameState = rememberTextFieldState("Lexi")
     val userDao = db.userDao()
     val scope = rememberCoroutineScope()
     var imageVersion by remember { mutableIntStateOf(0) }

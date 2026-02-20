@@ -26,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.composetutorial.R
+import com.example.composetutorial.User
 import com.example.composetutorial.UserDao
 import com.example.composetutorial.data.SampleData
 import com.example.composetutorial.ui.theme.ComposeTutorialTheme
@@ -74,13 +75,10 @@ fun MessageCard(msg: Message, customName: String) {
 
 @Composable
 fun Conversation(messages: List<Message>, onNavigateToView2: () -> Unit, userDao: UserDao? = null) {
-    var customName by remember { mutableStateOf<String>("default")}
+    var customName by remember { mutableStateOf("")}
     LaunchedEffect(Unit) {
-        println("userdao: $userDao")
         val existingUser = userDao?.get(0)
         existingUser?.username?.let { customName = it }
-//        customName = userDao?.get(0)?.username.toString()
-        println("got name and set to $customName")
     }
 
     Column {
