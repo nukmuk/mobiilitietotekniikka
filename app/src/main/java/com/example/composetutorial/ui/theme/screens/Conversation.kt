@@ -34,7 +34,7 @@ data class Message(val author: String, val body: String)
 @Composable
 fun MessageCard(msg: Message) {
     Row(modifier = Modifier.padding(all = 8.dp)) {
-        ProfilePicture(R.drawable.profile_picture)
+        ProfilePicture(fallback = R.drawable.profile_picture)
 
         Spacer(modifier = Modifier.width(8.dp))
 
