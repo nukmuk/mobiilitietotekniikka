@@ -17,13 +17,11 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun SensorsScreen() {
     val context = LocalContext.current
-    val sensorManager = remember {
-        context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
-    }
+    val sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
 
     // State to hold sensor values
-    var luxValue by remember { mutableStateOf(0f) }
-    var sensorAccuracy by remember { mutableStateOf(0) }
+    var luxValue by remember { mutableFloatStateOf(0f) }
+    var sensorAccuracy by remember { mutableIntStateOf(0) }
 
     // DisposableEffect to handle sensor lifecycle
     DisposableEffect(Unit) {
@@ -34,6 +32,9 @@ fun SensorsScreen() {
                 // The light sensor returns a single value.
                 // Many sensors return 3 values, one for each axis.
                 luxValue = event.values[0]
+                if (luxValue > 100) {
+
+                }
             }
 
             override fun onAccuracyChanged(sensor: Sensor, accuracy: Int) {

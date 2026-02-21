@@ -34,6 +34,7 @@ fun ProfilePicture(size: Int = 40, fallback: Int, imageVersion: Int = 0) {
         return
     }
 
+    // borrowed from https://stackoverflow.com/a/79439065
     val model = ImageRequest.Builder(context)
         .data("${profilePictureFile.toURI()}?v=$imageVersion")
         .diskCachePolicy(CachePolicy.DISABLED)

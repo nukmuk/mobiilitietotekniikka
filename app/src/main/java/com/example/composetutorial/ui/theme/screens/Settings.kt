@@ -1,8 +1,12 @@
 package com.example.composetutorial.ui.theme.screens
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
@@ -16,18 +20,22 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import com.example.composetutorial.AppDatabase
 import com.example.composetutorial.R
 import com.example.composetutorial.User
 import com.example.composetutorial.ui.theme.components.ProfilePicture
+import com.example.composetutorial.utils.createNotificationChannel
 import com.example.composetutorial.utils.deleteProfilePicture
 import com.example.composetutorial.utils.saveProfilePicture
+import com.example.composetutorial.utils.showNotification
 import kotlinx.coroutines.launch
 
 @Composable
@@ -41,6 +49,31 @@ fun Settings(
     val userDao = db.userDao()
     val scope = rememberCoroutineScope()
     var imageVersion by remember { mutableIntStateOf(0) }
+
+    // borrowed from https://stackoverflow.com/a/79111223
+    var hasNotificationPermission by remember {
+        mutableStateOf(
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+
+                ContextCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) == PackageManager.PERMISSION_GRANTED
+            } else true
+        )
+    }
+
+    val permissionRequest =
+        rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestPermission()) { result ->
+            hasNotificationPermission = result
+            // if granted you can show notification here
+            if(hasNotificationPermission) showNotification(context)
+        }
+
+    // Create notification channel on first launch
+    LaunchedEffect(Unit) {
+        createNotificationChannel(context)
+    }
 
     LaunchedEffect(Unit) {
         val existingUser = userDao.get(0)
@@ -86,6 +119,23 @@ fun Settings(
         }) {
             Text("Reset profile picture")
         }
+
+        // Notification buttons
+        Button(onClick = {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                permissionRequest.launch(Manifest.permission.POST_NOTIFICATIONS)
+            }
+        }) {
+            Text(if (hasNotificationPermission) "Notification Permission Granted" else "Request Notification Permission")
+        }
+
+        Button(
+            onClick = { showNotification(context, "Test Notification", "This is a test!") },
+            enabled = hasNotificationPermission
+        ) {
+            Text("Send Test Notification")
+        }
+
         Button(onClick = { onNavigateToSensors() }) { Text("Sensors") }
     }
 }
