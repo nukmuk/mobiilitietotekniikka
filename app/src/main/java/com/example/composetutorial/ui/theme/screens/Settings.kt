@@ -31,7 +31,11 @@ import com.example.composetutorial.utils.saveProfilePicture
 import kotlinx.coroutines.launch
 
 @Composable
-fun Settings(onNavigateToConversation: () -> Unit, db: AppDatabase) {
+fun Settings(
+    onNavigateToConversation: () -> Unit,
+    db: AppDatabase,
+    onNavigateToSensors: () -> Unit
+) {
     val context = LocalContext.current
     val usernameState = rememberTextFieldState("Lexi")
     val userDao = db.userDao()
@@ -55,7 +59,11 @@ fun Settings(onNavigateToConversation: () -> Unit, db: AppDatabase) {
 
     Column(Modifier.padding(8.dp)) {
         Button(onClick = onNavigateToConversation) { Text("Conversation") }
-        ProfilePicture(size = 120, fallback = R.drawable.profile_picture, imageVersion = imageVersion)
+        ProfilePicture(
+            size = 120,
+            fallback = R.drawable.profile_picture,
+            imageVersion = imageVersion
+        )
         TextField(
             state = usernameState,
             label = { Text("Username") },
@@ -78,6 +86,7 @@ fun Settings(onNavigateToConversation: () -> Unit, db: AppDatabase) {
         }) {
             Text("Reset profile picture")
         }
+        Button(onClick = { onNavigateToSensors() }) { Text("Sensors") }
     }
 }
 

@@ -7,6 +7,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.composetutorial.data.SampleData
 import com.example.composetutorial.ui.theme.screens.Conversation
+import com.example.composetutorial.ui.theme.screens.SensorsScreen
 import com.example.composetutorial.ui.theme.screens.Settings
 import com.example.composetutorial.ui.theme.screens.View2
 
@@ -19,40 +20,43 @@ fun MyAppNavHost(
     NavHost(
         modifier = modifier,
         navController = navController,
-        startDestination = NavigationNames.SETTINGS,
+        startDestination = Screens.SETTINGS,
     ) {
-        composable(NavigationNames.CONVERSATION) {
+        composable(Screens.CONVERSATION) {
             Conversation(
                 SampleData.conversationSample, {
-                    navController.navigate(NavigationNames.VIEW2) {
+                    navController.navigate(Screens.VIEW2) {
                         launchSingleTop = true
                     }
                 },
                 userDao = db.userDao()
             )
         }
-        composable(NavigationNames.VIEW2) {
+        composable(Screens.VIEW2) {
             View2 {
                 if (!navController.popBackStack()) {
-                    navController.navigate(NavigationNames.CONVERSATION) {
+                    navController.navigate(Screens.CONVERSATION) {
                         launchSingleTop = true
                     }
                 }
             }
         }
-        composable(NavigationNames.SETTINGS) {
+        composable(Screens.SETTINGS) {
             Settings(
                 {
-                    navController.navigate(NavigationNames.CONVERSATION)
+                    navController.navigate(Screens.CONVERSATION)
                 },
-                db
+                db,
+                { navController.navigate(Screens.SENSORS)}
             )
         }
+        composable(Screens.SENSORS){ SensorsScreen() }
     }
 }
 
-object NavigationNames {
+object Screens {
     const val CONVERSATION = "conversation"
     const val VIEW2 = "view2"
     const val SETTINGS = "settings"
+    const val SENSORS = "sensors"
 }
