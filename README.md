@@ -41,7 +41,13 @@ was added.
 
 ### HW4 description
 
-
+The post notifications permission is checked with `ContextCompat.checkSelfPermission()` and
+requested with `ActivityResultContracts.RequestPermission()`. The app creates a foreground service
+which sends a notification in the background if motion is detected. Android docs says gyroscope
+can't be used normally if the app is in the background hence the foreground service. An intent is
+added to the notification with `putExtra("navigate_to, ...)` which tells the app which screen to
+navigate to. I'm using the gyroscope for sending the notification and the light meter to display
+light level in the sensors screen for fun.
 
 #### Extra:
 
