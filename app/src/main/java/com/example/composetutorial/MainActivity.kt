@@ -30,12 +30,9 @@ class MainActivity : ComponentActivity() {
             ).build()
             val userDao = db.userDao()
             LaunchedEffect(Unit) {
-                println("launched")
                 val user = userDao.get(0)
-                println("user is $user")
                 if (user == null)
                     userDao.upsertUser(User(0, "Lexi"))
-                    println("making default user AAAA")
             }
 
             LaunchedEffect(navController) {
