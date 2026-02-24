@@ -1,6 +1,7 @@
 package com.example.composetutorial
 
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -13,10 +14,13 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
 import androidx.room.Room
 import com.example.composetutorial.ui.theme.ComposeTutorialTheme
+import com.example.composetutorial.utils.createNotificationChannel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        startForegroundService(Intent(this, MotionDetectionService::class.java))
+        createNotificationChannel(this)
         enableEdgeToEdge()
         setContent {
             val navController = rememberNavController()
@@ -34,6 +38,11 @@ class MainActivity : ComponentActivity() {
                     println("making default user AAAA")
             }
 
+            LaunchedEffect(navController) {
+                val destination = intent?.getStringExtra("navigate_to") ?: return@LaunchedEffect
+                navController.navigate(destination) { launchSingleTop = true }
+            }
+
             ComposeTutorialTheme {
                 Surface(modifier = Modifier.fillMaxSize()) {
                     MyAppNavHost(
@@ -45,5 +54,9 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
-}
 
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+    }
+}

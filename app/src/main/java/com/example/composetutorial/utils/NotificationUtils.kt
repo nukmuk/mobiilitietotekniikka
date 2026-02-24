@@ -3,6 +3,7 @@ package com.example.composetutorial.utils
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Context
 import androidx.core.app.NotificationCompat
 import com.example.composetutorial.R
@@ -23,19 +24,21 @@ fun createNotificationChannel(context: Context) {
 fun showNotification(
     context: Context,
     title: String = "Hello!",
-    message: String = "This is a test notification"
+    message: String = "This is a test notification",
+    pendingIntent: PendingIntent? = null
 ) {
     val notificationManager =
         context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-    val notification = NotificationCompat.Builder(context, CHANNEL_ID)
+    val builder = NotificationCompat.Builder(context, CHANNEL_ID)
         .setSmallIcon(R.drawable.ic_launcher_foreground)
         .setContentTitle(title)
         .setContentText(message)
         .setPriority(NotificationCompat.PRIORITY_DEFAULT)
         .setAutoCancel(true)
-        .build()
 
-    notificationManager.notify(System.currentTimeMillis().toInt(), notification)
+    if (pendingIntent != null) builder.setContentIntent(pendingIntent)
+
+    notificationManager.notify(System.currentTimeMillis().toInt(), builder.build())
 }
 
