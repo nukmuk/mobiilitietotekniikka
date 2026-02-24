@@ -8,14 +8,10 @@ import androidx.core.app.NotificationCompat
 import com.example.composetutorial.R
 
 const val CHANNEL_ID = "default_channel"
-const val CHANNEL_NAME = "Default Notifications"
 
-/**
- * Creates a notification channel for Android 8.0 (API 26) and above
- */
 fun createNotificationChannel(context: Context) {
     val importance = NotificationManager.IMPORTANCE_DEFAULT
-    val channel = NotificationChannel(CHANNEL_ID, CHANNEL_NAME, importance).apply {
+    val channel = NotificationChannel(CHANNEL_ID, "Notifications", importance).apply {
         description = "Default notification channel for the app"
     }
 
@@ -24,9 +20,6 @@ fun createNotificationChannel(context: Context) {
     notificationManager.createNotificationChannel(channel)
 }
 
-/**
- * Shows a simple notification
- */
 fun showNotification(
     context: Context,
     title: String = "Hello!",
