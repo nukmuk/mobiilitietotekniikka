@@ -37,4 +37,14 @@ I'm only storing the username in the database of my app. It's expected to take u
 depending on the length of the username, and a few bytes more if we take into account whatever other
 data the SQLite database requires to function. Additionally, whether the messages have been read
 could also be stored in the database or for example whether dark mode is enabled if such a setting
-was added. 
+was added.
+
+### HW4 description
+
+
+
+#### Extra:
+
+I'm using the gyroscope and light sensor. If they aren't available on the device the app still works
+but the sensors just report 0 for all values. I also verified this by removing the sensors from the
+virtual device. The app doesn't require internet connection.

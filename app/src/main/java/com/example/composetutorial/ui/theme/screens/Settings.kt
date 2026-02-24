@@ -53,13 +53,11 @@ fun Settings(
     // borrowed from https://stackoverflow.com/a/79111223
     var hasNotificationPermission by remember {
         mutableStateOf(
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
 
-                ContextCompat.checkSelfPermission(
-                    context,
-                    Manifest.permission.POST_NOTIFICATIONS
-                ) == PackageManager.PERMISSION_GRANTED
-            } else true
+            ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) == PackageManager.PERMISSION_GRANTED
         )
     }
 
@@ -120,11 +118,8 @@ fun Settings(
             Text("Reset profile picture")
         }
 
-        // Notification buttons
         Button(onClick = {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                permissionRequest.launch(Manifest.permission.POST_NOTIFICATIONS)
-            }
+            permissionRequest.launch(Manifest.permission.POST_NOTIFICATIONS)
         }) {
             Text(if (hasNotificationPermission) "Notification Permission Granted" else "Request Notification Permission")
         }
