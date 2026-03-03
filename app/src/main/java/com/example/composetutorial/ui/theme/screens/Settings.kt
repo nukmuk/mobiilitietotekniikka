@@ -71,9 +71,6 @@ fun Settings(
     // Create notification channel on first launch
     LaunchedEffect(Unit) {
         createNotificationChannel(context)
-    }
-
-    LaunchedEffect(Unit) {
         val existingUser = userDao.get(0)
         existingUser?.username?.let { usernameState.setTextAndPlaceCursorAtEnd(it) }
     }

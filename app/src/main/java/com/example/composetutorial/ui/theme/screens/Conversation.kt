@@ -7,15 +7,21 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -26,7 +32,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.composetutorial.R
-import com.example.composetutorial.User
 import com.example.composetutorial.UserDao
 import com.example.composetutorial.data.SampleData
 import com.example.composetutorial.ui.theme.ComposeTutorialTheme
@@ -46,11 +51,9 @@ fun MessageCard(msg: Message, customName: String) {
             if (isExpanded) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface
         )
 
-        val author = customName
-
         Column(modifier = Modifier.clickable { isExpanded = !isExpanded }) {
             Text(
-                text = author,
+                text = customName,
                 color = MaterialTheme.colorScheme.secondary
             )
             Spacer(modifier = Modifier.height(4.dp))
@@ -75,19 +78,29 @@ fun MessageCard(msg: Message, customName: String) {
 
 @Composable
 fun Conversation(messages: List<Message>, onNavigateToView2: () -> Unit, userDao: UserDao? = null) {
-    var customName by remember { mutableStateOf("")}
+    var customName by remember { mutableStateOf("hello") }
+    val messageField = rememberTextFieldState()
     LaunchedEffect(Unit) {
         val existingUser = userDao?.get(0)
         existingUser?.username?.let { customName = it }
     }
 
-    Column {
+    Column(modifier = Modifier.fillMaxSize()) {
         Button(onClick = onNavigateToView2, Modifier.padding(8.dp)) {
             Text("Go to view 2")
         }
-        LazyColumn {
+        LazyColumn(modifier = Modifier.weight(1f)) {
             items(messages) { message ->
                 MessageCard(message, customName)
+            }
+        }
+        Row {
+            TextField(messageField)
+            Button(onClick = {}) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.Send,
+                    contentDescription = "send button",
+                )
             }
         }
     }
@@ -112,7 +125,7 @@ fun PreviewMessageCard() {
     ComposeTutorialTheme {
         Surface {
             MessageCard(
-                msg = Message("Lexi", "Hey, take a look at Jetpack Compose, it's great!",),
+                msg = Message("Lexi", "Hey, take a look at Jetpack Compose, it's great!"),
                 "test"
             )
         }
