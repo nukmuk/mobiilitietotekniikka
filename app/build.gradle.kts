@@ -87,4 +87,6 @@ dependencies {
 
     // optional - Kotlin Extensions and Coroutines support for Room
     implementation("androidx.room:room-ktx:${roomVersion}")
+
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
 }

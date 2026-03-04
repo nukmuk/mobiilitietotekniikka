@@ -2,7 +2,6 @@ package com.example.composetutorial.ui.theme.screens
 
 import android.Manifest
 import android.content.pm.PackageManager
-import android.os.Build
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
@@ -42,7 +41,8 @@ import kotlinx.coroutines.launch
 fun Settings(
     onNavigateToConversation: () -> Unit,
     db: AppDatabase,
-    onNavigateToSensors: () -> Unit
+    onNavigateToSensors: () -> Unit,
+    onNavigateToParkingSpaces: () -> Unit
 ) {
     val context = LocalContext.current
     val usernameState = rememberTextFieldState("Lexi")
@@ -87,6 +87,7 @@ fun Settings(
 
     Column(Modifier.padding(8.dp)) {
         Button(onClick = onNavigateToConversation) { Text("Conversation") }
+        Button(onClick = onNavigateToParkingSpaces) { Text("Parking Spaces") }
         ProfilePicture(
             size = 120,
             fallback = R.drawable.profile_picture,

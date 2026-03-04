@@ -8,6 +8,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.composetutorial.ui.theme.screens.Conversation
+import com.example.composetutorial.ui.theme.screens.ParkingSpacesScreen
 import com.example.composetutorial.ui.theme.screens.SensorsScreen
 import com.example.composetutorial.ui.theme.screens.Settings
 import com.example.composetutorial.ui.theme.screens.View2
@@ -50,10 +51,12 @@ fun MyAppNavHost(
                     navController.navigate(Screens.CONVERSATION)
                 },
                 db,
-                { navController.navigate(Screens.SENSORS)}
+                { navController.navigate(Screens.SENSORS)},
+                { navController.navigate(Screens.PARKING_SPACES)}
             )
         }
         composable(Screens.SENSORS){ SensorsScreen() }
+        composable(Screens.PARKING_SPACES){ ParkingSpacesScreen() }
     }
 }
 
@@ -62,4 +65,5 @@ object Screens {
     const val VIEW2 = "view2"
     const val SETTINGS = "settings"
     const val SENSORS = "sensors"
+    const val PARKING_SPACES = "parking_spaces"
 }
