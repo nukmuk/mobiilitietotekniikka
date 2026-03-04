@@ -43,7 +43,8 @@ fun Settings(
     onNavigateToConversation: () -> Unit,
     db: AppDatabase,
     onNavigateToSensors: () -> Unit,
-    onNavigateToParkingSpaces: () -> Unit
+    onNavigateToParkingSpaces: () -> Unit,
+    onNavigateToVoiceRecorder: () -> Unit
 ) {
     val context = LocalContext.current
     val usernameState = rememberTextFieldState("Lexi")
@@ -88,6 +89,9 @@ fun Settings(
     Column(Modifier.padding(8.dp)) {
         Button(onClick = onNavigateToConversation) { Text("Conversation") }
         Button(onClick = onNavigateToParkingSpaces) { Text("Parking Spaces") }
+        Button(onClick = onNavigateToSensors) { Text("Sensors") }
+        Button(onClick = onNavigateToVoiceRecorder) { Text("Voice Recorder") }
+        
         ProfilePicture(
             size = 120,
             fallback = R.drawable.profile_picture,
@@ -136,7 +140,5 @@ fun Settings(
         ) {
             Text("Send Test Notification")
         }
-
-        Button(onClick = { onNavigateToSensors() }) { Text("Sensors") }
     }
 }

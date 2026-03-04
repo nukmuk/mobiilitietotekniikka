@@ -12,6 +12,7 @@ import com.example.composetutorial.ui.theme.screens.ParkingSpacesScreen
 import com.example.composetutorial.ui.theme.screens.SensorsScreen
 import com.example.composetutorial.ui.theme.screens.Settings
 import com.example.composetutorial.ui.theme.screens.View2
+import com.example.composetutorial.ui.theme.screens.VoiceRecorderScreen
 
 @Composable
 fun MyAppNavHost(
@@ -52,11 +53,13 @@ fun MyAppNavHost(
                 },
                 db,
                 { navController.navigate(Screens.SENSORS)},
-                { navController.navigate(Screens.PARKING_SPACES)}
+                { navController.navigate(Screens.PARKING_SPACES)},
+                { navController.navigate(Screens.VOICE_RECORDER)}
             )
         }
         composable(Screens.SENSORS){ SensorsScreen() }
         composable(Screens.PARKING_SPACES){ ParkingSpacesScreen() }
+        composable(Screens.VOICE_RECORDER){ VoiceRecorderScreen() }
     }
 }
 
@@ -66,4 +69,5 @@ object Screens {
     const val SETTINGS = "settings"
     const val SENSORS = "sensors"
     const val PARKING_SPACES = "parking_spaces"
+    const val VOICE_RECORDER = "voice_recorder"
 }
