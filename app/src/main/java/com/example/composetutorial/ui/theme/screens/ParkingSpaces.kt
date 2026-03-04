@@ -16,7 +16,7 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.*
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -24,20 +24,9 @@ import okhttp3.RequestBody.Companion.toRequestBody
 
 @Serializable
 data class CarPark(
-    val carParkId: String,
     val name: String,
-    val maxCapacity: Int?,
-    val spacesAvailable: Int?
-)
-
-@Serializable
-data class CarParkData(
-    val carParks: List<CarPark>
-)
-
-@Serializable
-data class GraphQLResponse(
-    val data: CarParkData
+    val maxCapacity: Int? = null,
+    val spacesAvailable: Int? = null
 )
 
 @Composable
@@ -50,21 +39,19 @@ fun ParkingSpacesScreen() {
     val json = remember { Json { ignoreUnknownKeys = true } }
 
     LaunchedEffect(Unit) {
-        val query = """
-            query GetAllCarParks {
+        val queryText = """
+            query GetKivisydan {
               carParks {
-                carParkId
                 name
-                lat
-                lon
                 maxCapacity
                 spacesAvailable
               }
             }
         """.trimIndent()
 
-        val requestBody = "{\"query\": \"${query.replace("\n", "\\n").replace("\"", "\\\"")}\"}"
-            .toRequestBody("application/json".toMediaType())
+        val requestBody = buildJsonObject {
+            put("query", queryText)
+        }.toString().toRequestBody("application/json".toMediaType())
 
         val request = Request.Builder()
             .url("https://api.oulunliikenne.fi/proxy/graphql")
@@ -74,18 +61,21 @@ fun ParkingSpacesScreen() {
         try {
             val body = withContext(Dispatchers.IO) {
                 client.newCall(request).execute().use { response ->
-                    if (response.isSuccessful) {
-                        response.body?.string()
-                    } else {
-                        errorMessage = "Error: ${response.code}"
-                        null
-                    }
+                    if (response.isSuccessful) response.body?.string() else null
                 }
             }
 
             if (body != null) {
-                val graphQLResponse = json.decodeFromString<GraphQLResponse>(body)
-                kivisydan = graphQLResponse.data.carParks.find { it.name == "Kivisydän" }
+                val root = json.parseToJsonElement(body).jsonObject
+                val carParks = root["data"]?.jsonObject?.get("carParks")?.jsonArray
+                
+                val match = carParks?.find { 
+                    it.jsonObject["name"]?.jsonPrimitive?.content == "Kivisydän"
+                }
+
+                if (match != null)
+                    kivisydan = json.decodeFromJsonElement<CarPark>(match)
+
             }
         } catch (e: Exception) {
             errorMessage = e.message
@@ -95,18 +85,19 @@ fun ParkingSpacesScreen() {
     }
 
     Column(modifier = Modifier.padding(16.dp)) {
+        Text(text = "Kivisydän parking", style = MaterialTheme.typography.headlineMedium)
+        
         if (isLoading) {
             CircularProgressIndicator(modifier = Modifier.padding(top = 16.dp))
         } else if (errorMessage != null) {
-            Text(text = errorMessage!!, color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(top = 16.dp))
+            Text(text = "Error: ${errorMessage!!}", modifier = Modifier.padding(top = 16.dp))
         } else if (kivisydan != null) {
             Column(modifier = Modifier.padding(top = 16.dp)) {
-                Text(text = "Name: ${kivisydan!!.name}")
-                Text(text = "Available: ${kivisydan!!.spacesAvailable ?: "N/A"}")
-                Text(text = "Max Capacity: ${kivisydan!!.maxCapacity ?: "N/A"}")
+                Text(text = "Free spaces: ${kivisydan!!.spacesAvailable ?: "Unknown"}")
+                Text(text = "Max capacity: ${kivisydan!!.maxCapacity ?: "Unknown"}")
             }
         } else {
-            Text(text = "Kivisydän not found", modifier = Modifier.padding(top = 16.dp))
+            Text(text = "Failed to get kivisydän info", modifier = Modifier.padding(top = 16.dp))
         }
     }
 }
