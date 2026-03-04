@@ -79,14 +79,14 @@ dependencies {
 
     val roomVersion = "2.8.4"
 
-    implementation("androidx.room:room-runtime:$roomVersion")
+    implementation(libs.androidx.room.runtime)
 
     // If this project uses any Kotlin source, use Kotlin Symbol Processing (KSP)
     // See Add the KSP plugin to your project
-    ksp("androidx.room:room-compiler:$roomVersion")
+    ksp(libs.androidx.room.compiler)
 
     // optional - Kotlin Extensions and Coroutines support for Room
-    implementation("androidx.room:room-ktx:${roomVersion}")
+    implementation(libs.androidx.room.ktx)
 
-    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation(libs.okhttp)
 }
