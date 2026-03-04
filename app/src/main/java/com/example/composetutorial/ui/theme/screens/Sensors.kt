@@ -100,16 +100,11 @@ fun SensorsScreen() {
         Text(text = "Light Level: $luxValue lux")
         Spacer(modifier = Modifier.height(16.dp))
 
-        Text(text = "Gyroscope (Spinning Detection)")
+        Text(text = "Gyroscope")
         Text(text = "Rotation X: %.2f rad/s".format(rotationX))
         Text(text = "Rotation Y: %.2f rad/s".format(rotationY))
         Text(text = "Rotation Z: %.2f rad/s".format(rotationZ))
         Text(text = "Magnitude: %.2f rad/s".format(rotationAmount))
-
-        if (rotationAmount > 2.0f) {
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(text = "⚠️ SPINNING DETECTED!", color = androidx.compose.ui.graphics.Color.Red)
-        }
 
         Spacer(modifier = Modifier.height(16.dp))
         Text(text = "Sensor Accuracy: $sensorAccuracy")
