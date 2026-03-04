@@ -24,6 +24,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
@@ -53,7 +54,6 @@ fun Settings(
     // borrowed from https://stackoverflow.com/a/79111223
     var hasNotificationPermission by remember {
         mutableStateOf(
-
             ContextCompat.checkSelfPermission(
                 context,
                 Manifest.permission.POST_NOTIFICATIONS
@@ -65,7 +65,7 @@ fun Settings(
         rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestPermission()) { result ->
             hasNotificationPermission = result
             // if granted you can show notification here
-            if(hasNotificationPermission) showNotification(context)
+            if (hasNotificationPermission) showNotification(context)
         }
 
     // Create notification channel on first launch
@@ -116,11 +116,19 @@ fun Settings(
             Text("Reset profile picture")
         }
 
-        Button(onClick = {
-            permissionRequest.launch(Manifest.permission.POST_NOTIFICATIONS)
-        }) {
+        Button(
+            onClick = {
+                permissionRequest.launch(Manifest.permission.POST_NOTIFICATIONS)
+            },
+            enabled = !hasNotificationPermission
+        ) {
             Text(if (hasNotificationPermission) "Notification Permission Granted" else "Request Notification Permission")
         }
+
+        Text(
+            text = if (hasNotificationPermission) "notification permission granted" else "notification permission not granted",
+            color = if (hasNotificationPermission) Color.Green else Color.Red
+        )
 
         Button(
             onClick = { showNotification(context, "Test Notification", "This is a test!") },
@@ -132,4 +140,3 @@ fun Settings(
         Button(onClick = { onNavigateToSensors() }) { Text("Sensors") }
     }
 }
-
