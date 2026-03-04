@@ -55,7 +55,7 @@ import com.example.composetutorial.ui.theme.components.ProfilePicture
 import kotlinx.coroutines.launch
 
 @Composable
-fun MessageCard(msg: Message) {
+fun MessageCard(msg: Message, authorName: String) {
     Row(modifier = Modifier.padding(all = 8.dp)) {
         ProfilePicture(fallback = R.drawable.profile_picture)
 
@@ -68,7 +68,7 @@ fun MessageCard(msg: Message) {
 
         Column(modifier = Modifier.clickable { isExpanded = !isExpanded }) {
             Text(
-                text = msg.author,
+                text = authorName,
                 color = MaterialTheme.colorScheme.secondary
             )
             Spacer(modifier = Modifier.height(4.dp))
@@ -137,7 +137,7 @@ fun Conversation(
             state = listState
         ) {
             items(messages) { message ->
-                MessageCard(message)
+                MessageCard(message, customName)
             }
         }
         Row(
@@ -199,6 +199,7 @@ fun PreviewMessageCard() {
         Surface {
             MessageCard(
                 msg = Message(author = "Lexi", body = "Hey, take a look at Jetpack Compose, it's great!"),
+                authorName = "Lexi"
             )
         }
     }
