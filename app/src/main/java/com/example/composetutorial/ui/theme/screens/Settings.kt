@@ -13,6 +13,7 @@ import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -48,6 +49,7 @@ fun Settings(
 ) {
     val context = LocalContext.current
     val usernameState = rememberTextFieldState("Lexi")
+    var originalUsername by remember { mutableStateOf("Lexi") }
     val userDao = db.userDao()
     val scope = rememberCoroutineScope()
     var imageVersion by remember { mutableIntStateOf(0) }
@@ -73,7 +75,10 @@ fun Settings(
     LaunchedEffect(Unit) {
         createNotificationChannel(context)
         val existingUser = userDao.get(0)
-        existingUser?.username?.let { usernameState.setTextAndPlaceCursorAtEnd(it) }
+        existingUser?.username?.let {
+            usernameState.setTextAndPlaceCursorAtEnd(it)
+            originalUsername = it
+        }
     }
 
     val pickMedia = rememberLauncherForActivityResult(PickVisualMedia()) { uri ->
@@ -102,11 +107,21 @@ fun Settings(
             label = { Text("Username") },
             lineLimits = TextFieldLineLimits.SingleLine,
         )
-        Button(onClick = {
-            scope.launch {
-                db.userDao().upsertUser(User(0, usernameState.text.toString()))
-            }
-        }) {
+        val isUsernameEdited = usernameState.text.toString() != originalUsername
+        Button(
+            onClick = {
+                scope.launch {
+                    val newUsername = usernameState.text.toString()
+                    db.userDao().upsertUser(User(0, newUsername))
+                    originalUsername = newUsername
+                }
+            },
+            enabled = isUsernameEdited,
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color(0, 255, 0),
+                contentColor = Color.Black
+            )
+        ) {
             Text("Save Username")
         }
         Button(onClick = { pickMedia.launch(PickVisualMediaRequest(PickVisualMedia.ImageOnly)) }) {
