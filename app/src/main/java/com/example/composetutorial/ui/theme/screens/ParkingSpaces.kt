@@ -1,3 +1,4 @@
+// asked chatgpt for small snippets, and approaches to working with graphql and json objects
 package com.example.composetutorial.ui.theme.screens
 
 import androidx.compose.foundation.layout.Column
@@ -16,7 +17,13 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.*
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.decodeFromJsonElement
+import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
+import kotlinx.serialization.json.put
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -39,8 +46,9 @@ fun ParkingSpacesScreen() {
     val json = remember { Json { ignoreUnknownKeys = true } }
 
     LaunchedEffect(Unit) {
+        // graphql example query from https://wp.oulunliikenne.fi/avoin-data/autoliikenne/graphql-rajapinnat/
         val queryText = """
-            query GetKivisydan {
+            query GetAllCarParks {
               carParks {
                 name
                 maxCapacity
@@ -61,15 +69,15 @@ fun ParkingSpacesScreen() {
         try {
             val body = withContext(Dispatchers.IO) {
                 client.newCall(request).execute().use { response ->
-                    if (response.isSuccessful) response.body?.string() else null
+                    if (response.isSuccessful) response.body.string() else null
                 }
             }
 
             if (body != null) {
                 val root = json.parseToJsonElement(body).jsonObject
                 val carParks = root["data"]?.jsonObject?.get("carParks")?.jsonArray
-                
-                val match = carParks?.find { 
+
+                val match = carParks?.find {
                     it.jsonObject["name"]?.jsonPrimitive?.content == "Kivisydän"
                 }
 
@@ -86,7 +94,7 @@ fun ParkingSpacesScreen() {
 
     Column(modifier = Modifier.padding(16.dp)) {
         Text(text = "Kivisydän parking", style = MaterialTheme.typography.headlineMedium)
-        
+
         if (isLoading) {
             CircularProgressIndicator(modifier = Modifier.padding(top = 16.dp))
         } else if (errorMessage != null) {

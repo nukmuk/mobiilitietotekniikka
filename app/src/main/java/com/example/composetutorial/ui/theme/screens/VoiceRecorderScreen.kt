@@ -73,7 +73,7 @@ fun VoiceRecorderScreen() {
             while (isRecording) {
                 val amp = try {
                     recorder?.maxAmplitude?.toFloat() ?: 0f
-                } catch (e: Exception) {
+                } catch (_: Exception) {
                     0f
                 }
                 // Normalize and add to list. maxAmplitude usually goes up to 32767.
@@ -94,25 +94,17 @@ fun VoiceRecorderScreen() {
             setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
             setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
             setOutputFile(file.absolutePath)
-            try {
-                prepare()
-                start()
-                recorder = this
-                isRecording = true
-            } catch (e: IOException) {
-                Log.e("VoiceRecorder", "prepare() failed", e)
-            }
+            prepare()
+            start()
+            recorder = this
+            isRecording = true
         }
     }
 
     fun stopRecording() {
-        try {
-            recorder?.apply {
-                stop()
-                release()
-            }
-        } catch (e: Exception) {
-            Log.e("VoiceRecorder", "stopRecording() failed", e)
+        recorder?.apply {
+            stop()
+            release()
         }
         recorder = null
         isRecording = false
@@ -141,13 +133,9 @@ fun VoiceRecorderScreen() {
     }
 
     fun stopPlaying() {
-        try {
-            player?.apply {
-                stop()
-                release()
-            }
-        } catch (e: Exception) {
-            Log.e("VoiceRecorder", "stopPlaying() failed", e)
+        player?.apply {
+            stop()
+            release()
         }
         player = null
         isPlaying = false
@@ -168,14 +156,14 @@ fun VoiceRecorderScreen() {
         verticalArrangement = Arrangement.Center
     ) {
         if (!hasPermission) {
-            Text("Recording permission is required")
+            Text("Microphone permission is required")
             Spacer(modifier = Modifier.height(8.dp))
             Button(onClick = { permissionLauncher.launch(Manifest.permission.RECORD_AUDIO) }) {
-                Text("Grant Permission")
+                Text("Grant permission")
             }
         } else {
             Text(
-                text = if (isRecording) "Recording..." else if (isPlaying) "Playing..." else "Idle",
+                text = if (isRecording) "Recording" else if (isPlaying) "Playing" else "Idle",
                 style = MaterialTheme.typography.headlineMedium
             )
             
